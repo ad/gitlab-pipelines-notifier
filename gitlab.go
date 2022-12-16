@@ -1,14 +1,24 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"time"
 
 	gl "github.com/xanzy/go-gitlab"
 )
 
 func initGitlabClient(config *Config) (*gl.Client, error) {
-	gitlabClient, err := gl.NewClient(config.GitlabToken, gl.WithBaseURL(config.GitlabURL))
+	transportConfig := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore expired SSL certificates
+	}
+
+	httpClient := &http.Client{
+		Transport: transportConfig,
+	}
+
+	gitlabClient, err := gl.NewClient(config.GitlabToken, gl.WithBaseURL(config.GitlabURL), gl.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, err
 	}

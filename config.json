@@ -1,9 +1,10 @@
 {
     "name": "gitlab-pipelines-notifier",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "slug": "gitlab-pipelines-notifier",
     "description": "",
     "startup": "application",
+    "host_network": true,
     "boot": "auto",
     "arch": [
         "amd64",

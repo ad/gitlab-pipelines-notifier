@@ -4,7 +4,7 @@
 
 the bot responds with the status when it has changed
 
-`/i https://path-to-task`
+`/issue https://path-to-task`
 
 the bot responds with the task info
 

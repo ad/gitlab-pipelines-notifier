@@ -96,15 +96,19 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 			messageText = formatPipelineInfo(pipelineInfo)
 
-			job := Job{
-				Key:        fmt.Sprintf("%s/%d", project, pipelineNumber),
-				ToID:       toID,
-				Project:    project,
-				PipelineID: pipelineNumber,
-				Status:     pipelineInfo.Status,
-			}
+			if pipelineInfo.Status != "success" && pipelineInfo.Status != "cancelled" && pipelineInfo.Status != "failed" {
+				messageText = messageText + "\n\nadded to check queue, you will be notified when pipeline status will be changed"
 
-			addJob(job)
+				job := Job{
+					Key:        fmt.Sprintf("%s/%d", project, pipelineNumber),
+					ToID:       toID,
+					Project:    project,
+					PipelineID: pipelineNumber,
+					Status:     pipelineInfo.Status,
+				}
+
+				addJob(job)
+			}
 		} else if strings.HasPrefix(incomingMessage, "/issue") || strings.HasPrefix(incomingMessage, "/i") {
 			message := strings.Trim(regexp.MustCompile(`\s+`).ReplaceAllString(incomingMessage, " "), " ")
 			parts := strings.Fields(message)

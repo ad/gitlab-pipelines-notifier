@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"regexp"
 	"strconv"
@@ -42,7 +43,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	if incomingMessage != "" && toID != 0 {
 		if !isAllowedID(toID) {
-			sendMessage(ctx, b, toID, "you are not allowed to use this bot")
+			sendMessage(ctx, b, toID, "you are not allowed to use this bot, your id: "+strconv.Itoa(toID))
 
 			return
 		}
@@ -78,7 +79,9 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 			// messageText = fmt.Sprintf("ask pipeline %d, project: %s, from %d, len %d\n", pipelineNumber, pipelineParts[3:5], toID, len(pipelineParts))
 
-			pipelineInfo, _, errPipelineInfo := gitlabClient.Pipelines.GetPipeline(strings.Join(pipelineParts[3:5], "/"), pipelineNumber, nil)
+			project := strings.Join(pipelineParts[3:5], "/")
+
+			pipelineInfo, _, errPipelineInfo := gitlabClient.Pipelines.GetPipeline(project, pipelineNumber, nil)
 			if errPipelineInfo != nil {
 				log.Printf("pipelineInfo %#v\n", pipelineInfo)
 				// log.Printf("pipelineResponse %#v\n", pipelineResponse)
@@ -92,6 +95,16 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			// log.Printf("pipelineResponse %#v\n", pipelineResponse)
 
 			messageText = formatPipelineInfo(pipelineInfo)
+
+			job := Job{
+				Key:        fmt.Sprintf("%s/%d", project, pipelineNumber),
+				ToID:       toID,
+				Project:    project,
+				PipelineID: pipelineNumber,
+				Status:     pipelineInfo.Status,
+			}
+
+			addJob(job)
 		} else if strings.HasPrefix(incomingMessage, "/issue") || strings.HasPrefix(incomingMessage, "/i") {
 			message := strings.Trim(regexp.MustCompile(`\s+`).ReplaceAllString(incomingMessage, " "), " ")
 			parts := strings.Fields(message)

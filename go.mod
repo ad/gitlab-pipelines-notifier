@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/go-telegram/bot v0.3.2
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/xanzy/go-gitlab v0.77.0
 )
 

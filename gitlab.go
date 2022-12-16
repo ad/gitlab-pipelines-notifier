@@ -53,13 +53,19 @@ func formatIssueInfo(issue *gl.Issue) string {
 		stateEmoji = "✅"
 	}
 
+	assignee := "nobody"
+
+	if issue.Assignee != nil && issue.Assignee.Username != "" {
+		assignee = issue.Assignee.Username
+	}
+
 	return fmt.Sprintf(
 		"%s %s\n%s\nAuthor: %s\nAssignee: %s\n%s",
 		stateEmoji,
 		issue.WebURL,
 		issue.Title,
 		issue.Author.Username,
-		issue.Assignee.Username,
+		assignee,
 		issue.Description,
 	)
 }

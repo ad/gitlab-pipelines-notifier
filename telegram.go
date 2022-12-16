@@ -11,7 +11,7 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-var shouldBeEscaped = "_*[]()~`>#+-=|{}.!"
+var shouldBeEscaped = "[]()>#+-=|{}.!"
 
 func escapeMarkdown(s string) string {
 	var result []rune
@@ -162,6 +162,7 @@ func sendMessage(ctx context.Context, b *bot.Bot, toID int, message string) {
 		ChatID:    toID,
 		Text:      escapeMarkdown(message),
 		ParseMode: models.ParseModeMarkdown,
+		// ProtectContent: true,
 	})
 
 	if errSendMarkdownMessage != nil {
@@ -170,6 +171,7 @@ func sendMessage(ctx context.Context, b *bot.Bot, toID int, message string) {
 		_, errSendMessage := b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: toID,
 			Text:   message,
+			// ProtectContent: true,
 		})
 
 		if errSendMessage != nil {

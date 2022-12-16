@@ -1,0 +1,25 @@
+{
+    "name": "gitlab-pipelines-notifier",
+    "version": "0.0.1",
+    "slug": "gitlab-pipelines-notifier",
+    "description": "",
+    "startup": "application",
+    "boot": "auto",
+    "arch": [
+        "amd64",
+        "armv7",
+        "aarch64",
+        "i386"
+    ],
+    "init": false,
+    "options": {
+        "TELEGRAM_TOKEN": "test",
+        "GITLAB_TOKEN": "bla_blabla",
+        "GITLAB_URL": "https://git.mydomain.com/api/v4"
+    },
+    "schema": {
+        "TELEGRAM_TOKEN": "str",
+        "GITLAB_TOKEN": "str",
+        "GITLAB_URL": "str"
+    }
+}

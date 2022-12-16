@@ -48,8 +48,8 @@ func initConfig() (*Config, error) {
 	if !initFromFile {
 		flag.StringVar(&config.Token, "TELEGRAM_TOKEN", lookupEnvOrString("TELEGRAM_TOKEN", config.Token), "telegram bot token")
 		flag.StringVar(&config.GitlabToken, "GITLAB_TOKEN", lookupEnvOrString("GITLAB_TOKEN", config.GitlabToken), "gitlab token")
-		flag.StringVar(&config.GitlabURL, "GITLAB_URL", lookupEnvOrString("GITLAB_URL", config.GitlabURL), "gitlab url, ex https://git.mydomain.com/api/v4")
-		flag.StringVar(&config.AllowedIDs, "ALLOWED_IDS", lookupEnvOrString("ALLOWED_IDS", config.AllowedIDs), "allowed telegram ids, ex 123456,123457")
+		flag.StringVar(&config.GitlabURL, "GITLAB_URL", lookupEnvOrString("GITLAB_URL", config.GitlabURL), "gitlab url, ex. https://git.mydomain.com/api/v4")
+		flag.StringVar(&config.AllowedIDs, "ALLOWED_IDS", lookupEnvOrString("ALLOWED_IDS", config.AllowedIDs), "allowed telegram ids, ex. 123456,123457")
 		flag.Parse()
 	}
 

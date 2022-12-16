@@ -51,5 +51,7 @@ func main() {
 
 	log.Println("bot started")
 
+	log.Println("allowed ids:", config.AllowedIDsList)
+
 	b.Start(ctx)
 }

@@ -1,6 +1,6 @@
 {
     "name": "gitlab-pipelines-notifier",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "slug": "gitlab-pipelines-notifier",
     "description": "",
     "startup": "application",
@@ -16,7 +16,7 @@
         "TELEGRAM_TOKEN": "test",
         "GITLAB_TOKEN": "bla_blabla",
         "GITLAB_URL": "https://git.mydomain.com/api/v4",
-        "ALLOWED_IDS": ""
+        "ALLOWED_IDS": "12345"
     },
     "schema": {
         "TELEGRAM_TOKEN": "str",

@@ -43,6 +43,8 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	if incomingMessage != "" && toID != 0 {
 		if !isAllowedID(toID) {
+			log.Printf("you are not allowed to use this bot, your id: %d", toID)
+
 			sendMessage(ctx, b, toID, "you are not allowed to use this bot, your id: "+strconv.Itoa(toID))
 
 			return

@@ -45,12 +45,19 @@ func formatPipelineInfo(pipeline *gl.Pipeline) string {
 		emojiStatus = "🚫"
 	}
 
+	finishedTime := "not finished"
+
+	// if finishedAt not set, set value to "not finished"
+	if !pipeline.FinishedAt.IsZero() && pipeline.FinishedAt != nil {
+		finishedTime = pipeline.FinishedAt.String()
+	}
+
 	return fmt.Sprintf(
 		"%s %s\nstarted: %s\nfinished: %s\nduration: %s",
 		emojiStatus,
 		pipeline.WebURL,
 		pipeline.StartedAt.String(),
-		pipeline.FinishedAt.String(),
+		finishedTime,
 		time.Duration(pipeline.Duration)*time.Second,
 	)
 }

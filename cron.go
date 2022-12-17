@@ -54,6 +54,8 @@ func (job *Job) Exec() {
 
 	// check pipeline in gitlab and send message to telegram user if status changes
 	go func(j Job) {
+		defer recovery()
+
 		fmt.Println("job", j.Key, "executed", j.Count, "time(s)")
 
 		// get pipeline from gitlab

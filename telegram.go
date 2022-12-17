@@ -26,6 +26,8 @@ func escapeMarkdown(s string) string {
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	defer recovery()
+
 	incomingMessage := ""
 	toID := 0
 

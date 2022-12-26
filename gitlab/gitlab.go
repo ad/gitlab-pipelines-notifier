@@ -73,9 +73,10 @@ func FormatPipelineInfo(pipeline *gl.Pipeline) string {
 	}
 
 	return fmt.Sprintf(
-		"%s %s\nstarted: %s\nfinished: %s\nduration: %s",
+		"%s %s\nref: %s\nstarted: %s\nfinished: %s\nduration: %s",
 		emojiStatus,
 		pipeline.WebURL,
+		pipeline.Ref,
 		startedTime,
 		finishedTime,
 		time.Duration(pipeline.Duration)*time.Second,

@@ -55,7 +55,7 @@ func TestInitCron(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := InitCron(tt.args.b); got == nil {
+			if got := InitCron(tt.args.b, nil); got == nil {
 				t.Errorf("InitCron() = %v, want %v", got, tt.want)
 			}
 		})

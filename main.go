@@ -51,10 +51,12 @@ func main() {
 
 	b, _ = bot.New(conf.TelegramToken, opts...)
 
-	C = cron.InitCron(b)
+	C = cron.InitCron(b, conf)
 	defer C.Cron.Stop()
 
 	tr.SetCron(C)
+
+	C.TrackPipelines(gitlabClient)
 
 	log.Println("bot started")
 

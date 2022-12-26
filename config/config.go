@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const ConfigFileName = "/data/options.json"
+const ConfigFileName = "data/options.json"
 
 // Config ...
 type Config struct {
@@ -46,9 +46,9 @@ func InitConfig(args []string, fileSystem fs.FS, filename string) (*Config, erro
 			} else {
 				initFromFile = true
 			}
-		} else {
+		} /* else {
 			return nil, fmt.Errorf("can't read file, %s", err.Error())
-		}
+		}*/
 	}
 
 	if !initFromFile {

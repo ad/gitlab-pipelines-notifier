@@ -14,3 +14,7 @@ Argument | Description
 `ALLOWED_IDS` | Comma separated list of allowed telegram ids
 `GITLAB_TOKEN` | Gitlab token
 `GITLAB_URL` | Gitlab url, ex. https://git.mydomain.com/api/v4
+`NOTIFY_TELEGRAM_ID` | Telegram id to notify
+`GITLAB_USERNAME` | Gitlab username
+`GITLAB_TRACK_PROJECTS` | Comma separated list of projects to track
+`GITLAB_TRACK_ONLY_SELF` | Track only self created pipelines

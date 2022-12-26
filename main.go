@@ -6,52 +6,59 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/ad/gitlab-pipelines-notifier/config"
+	"github.com/ad/gitlab-pipelines-notifier/cron"
+	"github.com/ad/gitlab-pipelines-notifier/gitlab"
+	"github.com/ad/gitlab-pipelines-notifier/telegram"
+	"github.com/ad/gitlab-pipelines-notifier/track"
+
 	"github.com/go-telegram/bot"
-	cron "github.com/robfig/cron/v3"
 
 	gl "github.com/xanzy/go-gitlab"
 )
 
 var (
-	config        *Config
+	conf          *config.Config
 	C             *cron.Cron
 	gitlabClient  *gl.Client
 	b             *bot.Bot
-	jobsContainer JobsContainer
+	errInitConfig error
 )
 
 func main() {
-	c, errInitConfig := initConfig()
+	conf, errInitConfig = config.InitConfig(os.Args, os.DirFS("/"), config.ConfigFileName)
 	if errInitConfig != nil {
 		log.Fatal(errInitConfig)
 	}
 
-	config = c
-
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	gl, errInitGitlabClient := initGitlabClient(config)
+	gl, errInitGitlabClient := gitlab.InitGitlabClient(conf)
 	if errInitGitlabClient != nil {
 		log.Fatal(errInitGitlabClient)
 	}
 
 	gitlabClient = gl
 
-	jobsContainer.jobs = make(map[string]cron.EntryID)
+	tr := track.InitTrack(gitlabClient, conf, nil)
 
-	C = initCron()
-	defer C.Stop()
+	th := telegram.InitTelegramHandler(gitlabClient, conf, tr)
 
 	opts := []bot.Option{
-		bot.WithDefaultHandler(handler),
+		bot.WithDefaultHandler(th.Handler),
 	}
 
-	b, _ = bot.New(config.Token, opts...)
+	b, _ = bot.New(conf.Token, opts...)
+
+	C = cron.InitCron(b)
+	defer C.Cron.Stop()
+
+	tr.SetCron(C)
 
 	log.Println("bot started")
 
-	log.Println("allowed ids:", config.AllowedIDsList)
+	log.Println("allowed ids:", conf.AllowedIDsList)
 
 	b.Start(ctx)
 }

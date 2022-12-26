@@ -1,4 +1,4 @@
-package main
+package telegram
 
 import (
 	"context"
@@ -8,11 +8,34 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ad/gitlab-pipelines-notifier/config"
+	"github.com/ad/gitlab-pipelines-notifier/gitlab"
+	"github.com/ad/gitlab-pipelines-notifier/recovery"
+	"github.com/ad/gitlab-pipelines-notifier/track"
+
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+
+	gl "github.com/xanzy/go-gitlab"
 )
 
-var shouldBeEscaped = "[]()>#+-=|{}.!"
+type TelegramHandler struct {
+	GitlabClient *gl.Client
+	Conf         *config.Config
+	Track        *track.Track
+}
+
+func InitTelegramHandler(gitlabClient *gl.Client, conf *config.Config, tr *track.Track) *TelegramHandler {
+	th := &TelegramHandler{
+		GitlabClient: gitlabClient,
+		Conf:         conf,
+		Track:        tr,
+	}
+
+	return th
+}
+
+const shouldBeEscaped = "[]()>#+-=|{}.!"
 
 func escapeMarkdown(s string) string {
 	var result []rune
@@ -25,8 +48,8 @@ func escapeMarkdown(s string) string {
 	return string(result)
 }
 
-func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	defer recovery()
+func (th *TelegramHandler) Handler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	defer recovery.Recovery()
 
 	incomingMessage := ""
 	toID := 0
@@ -44,10 +67,10 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	if incomingMessage != "" && toID != 0 {
-		if !isAllowedID(toID) {
+		if !isAllowedID(th.Conf, toID) {
 			log.Printf("you are not allowed to use this bot, your id: %d", toID)
 
-			sendMessage(ctx, b, toID, "you are not allowed to use this bot, your id: "+strconv.Itoa(toID))
+			_ = SendMessage(ctx, b, toID, "you are not allowed to use this bot, your id: "+strconv.Itoa(toID))
 
 			return
 		}
@@ -59,7 +82,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			parts := strings.Fields(message)
 
 			if len(parts) < 2 {
-				sendMessage(ctx, b, toID, "you must send command in format /p[ipeline] https://yourgitlab.com/yourgroup/yourproject/-/pipelines/12345")
+				_ = SendMessage(ctx, b, toID, "you must send command in format /p[ipeline] https://yourgitlab.com/yourgroup/yourproject/-/pipelines/12345")
 
 				return
 			}
@@ -67,14 +90,14 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			pipelineParts := strings.Split(parts[1], "/")
 
 			if len(pipelineParts) != 8 {
-				sendMessage(ctx, b, toID, "you must send command in format /p[ipeline] https://yourgitlab.com/yourgroup/yourproject/-/pipelines/12345")
+				_ = SendMessage(ctx, b, toID, "you must send command in format /p[ipeline] https://yourgitlab.com/yourgroup/yourproject/-/pipelines/12345")
 
 				return
 			}
 
 			pipelineNumber, errPipelineNumber := strconv.Atoi(pipelineParts[len(pipelineParts)-1])
 			if errPipelineNumber != nil {
-				sendMessage(ctx, b, toID, "wrong pipeline number")
+				_ = SendMessage(ctx, b, toID, "wrong pipeline number")
 
 				return
 			}
@@ -85,7 +108,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 			project := strings.Join(pipelineParts[3:5], "/")
 
-			pipelineInfo, _, errPipelineInfo := gitlabClient.Pipelines.GetPipeline(project, pipelineNumber, nil)
+			pipelineInfo, _, errPipelineInfo := th.GitlabClient.Pipelines.GetPipeline(project, pipelineNumber, nil)
 			if errPipelineInfo != nil {
 				log.Printf("pipelineInfo %#v\n", pipelineInfo)
 				// log.Printf("pipelineResponse %#v\n", pipelineResponse)
@@ -98,27 +121,19 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			log.Printf("pipelineInfo %#v\n", pipelineInfo)
 			// log.Printf("pipelineResponse %#v\n", pipelineResponse)
 
-			messageText = formatPipelineInfo(pipelineInfo)
+			messageText = gitlab.FormatPipelineInfo(pipelineInfo)
 
 			if pipelineInfo.Status != "success" && pipelineInfo.Status != "cancelled" && pipelineInfo.Status != "failed" {
 				messageText = messageText + "\n\nadded to check queue, you will be notified when pipeline status will be changed"
 
-				job := Job{
-					Key:        fmt.Sprintf("%s/%d", project, pipelineNumber),
-					ToID:       toID,
-					Project:    project,
-					PipelineID: pipelineNumber,
-					Status:     pipelineInfo.Status,
-				}
-
-				addJob(job)
+				th.Track.StartTrack(toID, pipelineNumber, fmt.Sprintf("%s/%d", project, pipelineNumber), project, pipelineInfo.Status)
 			}
 		} else if strings.HasPrefix(incomingMessage, "/issue") || strings.HasPrefix(incomingMessage, "/i") {
 			message := strings.Trim(regexp.MustCompile(`\s+`).ReplaceAllString(incomingMessage, " "), " ")
 			parts := strings.Fields(message)
 
 			if len(parts) < 2 {
-				sendMessage(ctx, b, toID, "you must send command in format /i[issue] https://yourgitlab.com/yourgroup/yourproject/-/issues/12345")
+				_ = SendMessage(ctx, b, toID, "you must send command in format /i[issue] https://yourgitlab.com/yourgroup/yourproject/-/issues/12345")
 
 				return
 			}
@@ -126,21 +141,21 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			issueParts := strings.Split(parts[1], "/")
 
 			if len(issueParts) != 8 {
-				sendMessage(ctx, b, toID, "you must send command in format /i[issue] https://yourgitlab.com/yourgroup/yourproject/-/issues/12345")
+				_ = SendMessage(ctx, b, toID, "you must send command in format /i[issue] https://yourgitlab.com/yourgroup/yourproject/-/issues/12345")
 
 				return
 			}
 
 			issueNumber, errIssueNumber := strconv.Atoi(issueParts[len(issueParts)-1])
 			if errIssueNumber != nil {
-				sendMessage(ctx, b, toID, "wrong issue number")
+				_ = SendMessage(ctx, b, toID, "wrong issue number")
 
 				return
 			}
 
 			log.Printf("ask issue %d, project: %s, from %d, len %d\n", issueNumber, issueParts[3:5], toID, len(issueParts))
 
-			issueInfo, _, errIssueInfo := gitlabClient.Issues.GetIssue(strings.Join(issueParts[3:5], "/"), issueNumber, nil)
+			issueInfo, _, errIssueInfo := th.GitlabClient.Issues.GetIssue(strings.Join(issueParts[3:5], "/"), issueNumber, nil)
 			if errIssueInfo != nil {
 				log.Printf("issueInfo %#v\n", issueInfo)
 				// log.Printf("issueResponse %#v\n", issueResponse)
@@ -153,12 +168,12 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			log.Printf("issueInfo %#v\n", issueInfo)
 			// log.Printf("issueResponse %#v\n", issueResponse)
 
-			messageText = formatIssueInfo(issueInfo)
+			messageText = gitlab.FormatIssueInfo(issueInfo)
 		} else {
 			messageText = "I don't understand you"
 		}
 
-		sendMessage(ctx, b, toID, messageText)
+		_ = SendMessage(ctx, b, toID, messageText)
 
 		return
 	} else {
@@ -166,10 +181,10 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 }
 
-func isAllowedID(id int) bool {
+func isAllowedID(conf *config.Config, id int) bool {
 	checkID := strconv.Itoa(id)
 
-	for _, allowedID := range config.AllowedIDsList {
+	for _, allowedID := range conf.AllowedIDsList {
 		if allowedID == checkID {
 			return true
 		}
@@ -178,25 +193,35 @@ func isAllowedID(id int) bool {
 	return false
 }
 
-func sendMessage(ctx context.Context, b *bot.Bot, toID int, message string) {
+func SendMessage(ctx context.Context, b *bot.Bot, toID int, message string) error {
+	if b == nil {
+		return fmt.Errorf("%s", "bot not set")
+	}
+
+	if toID == 0 {
+		return fmt.Errorf("%s", "empty user id")
+	}
+
+	if message == "" {
+		return fmt.Errorf("%s", "empty message")
+	}
+
 	_, errSendMarkdownMessage := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:    toID,
 		Text:      escapeMarkdown(message),
 		ParseMode: models.ParseModeMarkdown,
-		// ProtectContent: true,
 	})
 
 	if errSendMarkdownMessage != nil {
-		log.Println(errSendMarkdownMessage)
-
 		_, errSendMessage := b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: toID,
 			Text:   message,
-			// ProtectContent: true,
 		})
 
 		if errSendMessage != nil {
-			log.Println(errSendMessage)
+			return errSendMessage
 		}
 	}
+
+	return nil
 }

@@ -1,4 +1,4 @@
-package main
+package gitlab
 
 import (
 	"crypto/tls"
@@ -6,10 +6,24 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ad/gitlab-pipelines-notifier/config"
+
 	gl "github.com/xanzy/go-gitlab"
 )
 
-func initGitlabClient(config *Config) (*gl.Client, error) {
+func InitGitlabClient(config *config.Config) (*gl.Client, error) {
+	if config == nil {
+		return nil, fmt.Errorf("config is nil")
+	}
+
+	if config.GitlabToken == "" {
+		return nil, fmt.Errorf("gitlab token is empty")
+	}
+
+	if config.GitlabURL == "" {
+		return nil, fmt.Errorf("gitlab url is empty")
+	}
+
 	transportConfig := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore expired SSL certificates
 	}
@@ -27,12 +41,12 @@ func initGitlabClient(config *Config) (*gl.Client, error) {
 }
 
 /*
-*	formatPipelineInfo formats pipeline info to string
+*	FormatPipelineInfo formats pipeline info to string
 *	returns status, url, duration (from seconds to human readable) and StartedAt/FinishedAt time
 *	@param pipeline *gl.Pipeline
 *	@return string
  */
-func formatPipelineInfo(pipeline *gl.Pipeline) string {
+func FormatPipelineInfo(pipeline *gl.Pipeline) string {
 	// unknown emoji
 	emojiStatus := "❓ " + pipeline.Status
 	if pipeline.Status == "running" {
@@ -48,21 +62,27 @@ func formatPipelineInfo(pipeline *gl.Pipeline) string {
 	finishedTime := "not finished"
 
 	// if finishedAt not set, set value to "not finished"
-	if !pipeline.FinishedAt.IsZero() && pipeline.FinishedAt != nil {
+	if pipeline.FinishedAt != nil && !pipeline.FinishedAt.IsZero() {
 		finishedTime = pipeline.FinishedAt.String()
+	}
+
+	startedTime := "not started"
+	// if startedAt not set, set value to "not started"
+	if pipeline.StartedAt != nil && !pipeline.StartedAt.IsZero() {
+		startedTime = pipeline.StartedAt.String()
 	}
 
 	return fmt.Sprintf(
 		"%s %s\nstarted: %s\nfinished: %s\nduration: %s",
 		emojiStatus,
 		pipeline.WebURL,
-		pipeline.StartedAt.String(),
+		startedTime,
 		finishedTime,
 		time.Duration(pipeline.Duration)*time.Second,
 	)
 }
 
-func formatIssueInfo(issue *gl.Issue) string {
+func FormatIssueInfo(issue *gl.Issue) string {
 	stateEmoji := "❓ " + issue.State
 	if issue.State == "opened" {
 		stateEmoji = "🔓"
@@ -76,12 +96,17 @@ func formatIssueInfo(issue *gl.Issue) string {
 		assignee = issue.Assignee.Username
 	}
 
+	author := "unknown author"
+	if issue.Author != nil && issue.Author.Username != "" {
+		author = issue.Author.Username
+	}
+
 	return fmt.Sprintf(
 		"%s %s\n%s\nAuthor: %s\nAssignee: %s\n%s",
 		stateEmoji,
 		issue.WebURL,
 		issue.Title,
-		issue.Author.Username,
+		author,
 		assignee,
 		issue.Description,
 	)

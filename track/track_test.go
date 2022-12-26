@@ -26,7 +26,7 @@ func TestTrack_StartTrack(t *testing.T) {
 		status         string
 	}
 
-	C := cron.InitCron(nil)
+	C := cron.InitCron(nil, nil)
 
 	tests := []struct {
 		name   string

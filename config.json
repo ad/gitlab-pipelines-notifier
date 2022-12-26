@@ -31,6 +31,6 @@
         "GITLAB_URL": "str",
         "GITLAB_TRACK_PROJECTS": "str",
         "GITLAB_USERNAME": "str",
-        "GITLAB_TRACK_ONLY_SELF": "boolean"
+        "GITLAB_TRACK_ONLY_SELF": "bool"
     }
 }

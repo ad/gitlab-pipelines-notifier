@@ -40,7 +40,7 @@ func TestInitConfig(t *testing.T) {
 			args:    []string{""},
 			isError: false,
 			want: &Config{
-				Token:          "test",
+				TelegramToken:  "test",
 				GitlabToken:    "bla_blabla",
 				GitlabURL:      "https://git.mydomain.com/api/v4",
 				AllowedIDs:     "12345",
@@ -92,7 +92,7 @@ func TestInitConfig(t *testing.T) {
 			args:    []string{"", "--TELEGRAM_TOKEN=1:2", "--GITLAB_TOKEN=123456789012345678901234567890123456", "--GITLAB_URL=123456789012345678901234567890123456", "--ALLOWED_IDS=123,123"},
 			isError: false,
 			want: &Config{
-				Token:          "1:2",
+				TelegramToken:  "1:2",
 				GitlabToken:    "123456789012345678901234567890123456",
 				GitlabURL:      "123456789012345678901234567890123456",
 				AllowedIDs:     "123,123",

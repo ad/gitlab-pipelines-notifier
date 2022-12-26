@@ -104,29 +104,23 @@ func (th *TelegramHandler) Handler(ctx context.Context, b *bot.Bot, update *mode
 
 			log.Printf("ask pipeline %d, project: %s, from %d, len %d\n", pipelineNumber, pipelineParts[3:5], toID, len(pipelineParts))
 
-			// messageText = fmt.Sprintf("ask pipeline %d, project: %s, from %d, len %d\n", pipelineNumber, pipelineParts[3:5], toID, len(pipelineParts))
-
 			project := strings.Join(pipelineParts[3:5], "/")
 
 			pipelineInfo, _, errPipelineInfo := th.GitlabClient.Pipelines.GetPipeline(project, pipelineNumber, nil)
 			if errPipelineInfo != nil {
-				log.Printf("pipelineInfo %#v\n", pipelineInfo)
-				// log.Printf("pipelineResponse %#v\n", pipelineResponse)
-
 				log.Printf("errPipelineInfo %#v\n", errPipelineInfo)
 
-				return
-			}
+				messageText = errPipelineInfo.(*gl.ErrorResponse).Message
+			} else {
+				log.Printf("pipelineInfo %#v\n", pipelineInfo)
 
-			log.Printf("pipelineInfo %#v\n", pipelineInfo)
-			// log.Printf("pipelineResponse %#v\n", pipelineResponse)
+				messageText = gitlab.FormatPipelineInfo(pipelineInfo)
 
-			messageText = gitlab.FormatPipelineInfo(pipelineInfo)
+				if pipelineInfo.Status != "success" && pipelineInfo.Status != "cancelled" && pipelineInfo.Status != "failed" {
+					messageText = messageText + "\n\nadded to check queue, you will be notified when pipeline status will be changed"
 
-			if pipelineInfo.Status != "success" && pipelineInfo.Status != "cancelled" && pipelineInfo.Status != "failed" {
-				messageText = messageText + "\n\nadded to check queue, you will be notified when pipeline status will be changed"
-
-				th.Track.StartTrack(toID, pipelineNumber, fmt.Sprintf("%s/%d", project, pipelineNumber), project, pipelineInfo.Status)
+					th.Track.StartTrack(toID, pipelineNumber, fmt.Sprintf("%s/%d", project, pipelineNumber), project, pipelineInfo.Status)
+				}
 			}
 		} else if strings.HasPrefix(incomingMessage, "/issue") || strings.HasPrefix(incomingMessage, "/i") {
 			message := strings.Trim(regexp.MustCompile(`\s+`).ReplaceAllString(incomingMessage, " "), " ")
@@ -157,18 +151,14 @@ func (th *TelegramHandler) Handler(ctx context.Context, b *bot.Bot, update *mode
 
 			issueInfo, _, errIssueInfo := th.GitlabClient.Issues.GetIssue(strings.Join(issueParts[3:5], "/"), issueNumber, nil)
 			if errIssueInfo != nil {
-				log.Printf("issueInfo %#v\n", issueInfo)
-				// log.Printf("issueResponse %#v\n", issueResponse)
-
 				log.Printf("errIssueInfo %#v\n", errIssueInfo)
 
-				return
+				messageText = errIssueInfo.(*gl.ErrorResponse).Message
+			} else {
+				log.Printf("issueInfo %#v\n", issueInfo)
+
+				messageText = gitlab.FormatIssueInfo(issueInfo)
 			}
-
-			log.Printf("issueInfo %#v\n", issueInfo)
-			// log.Printf("issueResponse %#v\n", issueResponse)
-
-			messageText = gitlab.FormatIssueInfo(issueInfo)
 		} else {
 			messageText = "I don't understand you"
 		}

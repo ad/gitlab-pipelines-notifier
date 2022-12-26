@@ -49,7 +49,7 @@ func main() {
 		bot.WithDefaultHandler(th.Handler),
 	}
 
-	b, _ = bot.New(conf.Token, opts...)
+	b, _ = bot.New(conf.TelegramToken, opts...)
 
 	C = cron.InitCron(b)
 	defer C.Cron.Stop()

@@ -1,6 +1,6 @@
 {
     "name": "gitlab-pipelines-notifier",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "slug": "gitlab-pipelines-notifier",
     "description": "",
     "startup": "application",
@@ -14,13 +14,13 @@
     ],
     "init": false,
     "options": {
-        "TELEGRAM_TOKEN": "test",
-        "ALLOWED_IDS": "12345",
+        "TELEGRAM_TOKEN": "telegram_token",
+        "ALLOWED_IDS": "comma-separated list",
         "NOTIFY_TELEGRAM_ID": "12345",
         "GITLAB_TOKEN": "bla_blabla",
         "GITLAB_URL": "https://git.mydomain.com/api/v4",
         "GITLAB_USERNAME": "test",
-        "GITLAB_TRACK_PROJECTS": "",
+        "GITLAB_TRACK_PROJECTS": "comma-separated list",
         "GITLAB_TRACK_ONLY_SELF": true
     },
     "schema": {

@@ -50,6 +50,7 @@ type Job struct {
 	Count       int
 	PipelineID  int
 	LastUpdated time.Time
+	LastID      int
 }
 
 // JobsContainer ...
@@ -107,45 +108,47 @@ func (job *Job) Exec() {
 			if errSendPipelineUpdate != nil {
 				fmt.Println(errSendPipelineUpdate)
 			}
-		} else {
-			if j.Cron.Conf.GitlabTrackProjectsList != nil {
-				options := &gl.ListProjectPipelinesOptions{}
 
-				if j.Cron.Conf.GitlabTrackOnlySelf && j.Cron.Conf.GitlabUsername != "" {
-					options.Username = &j.Cron.Conf.GitlabUsername
-				}
+			return
+		}
 
-				if j.LastUpdated.IsZero() {
-					now := time.Now()
-					options.UpdatedAfter = &now
-				} else {
-					options.UpdatedAfter = &j.LastUpdated
-					j.LastUpdated = time.Now()
-				}
+		if j.Cron.Conf.GitlabTrackProjectsList != nil {
+			options := &gl.ListProjectPipelinesOptions{}
 
-				if pipelineInfo, _, err := j.Gitlab.Pipelines.ListProjectPipelines(
-					j.Project,
-					options,
-				); err != nil {
-					log.Printf("error getting pipelines for project %s: %s\n", j.Project, err.Error())
-				} else {
-					if len(pipelineInfo) > 0 {
-						for _, pipeline := range pipelineInfo {
-							pipelineInfo, _, err := j.Gitlab.Pipelines.GetPipeline(j.Project, pipeline.ID)
-							if err != nil {
-								fmt.Printf("error getting pipeline: %s\n", err)
+			if j.Cron.Conf.GitlabTrackOnlySelf && j.Cron.Conf.GitlabUsername != "" {
+				options.Username = &j.Cron.Conf.GitlabUsername
+			}
 
-								return
-							}
+			if j.LastUpdated.IsZero() {
+				now := time.Now()
+				options.UpdatedAfter = &now
+			} else {
+				options.UpdatedAfter = &j.LastUpdated
+				j.LastUpdated = time.Now()
+			}
 
-							pipelineMessage := gitlab.FormatPipelineInfo(pipelineInfo)
+			if pipelineInfo, _, err := j.Gitlab.Pipelines.ListProjectPipelines(
+				j.Project,
+				options,
+			); err != nil {
+				log.Printf("error getting pipelines for project %s: %s\n", j.Project, err.Error())
+			} else {
+				if len(pipelineInfo) > 0 {
+					for _, pipeline := range pipelineInfo {
+						pipelineInfo, _, err := j.Gitlab.Pipelines.GetPipeline(j.Project, pipeline.ID)
+						if err != nil {
+							fmt.Printf("error getting pipeline: %s\n", err)
 
-							_ = j.SendMessage(
-								context.Background(),
-								j.ToID,
-								"**Pipeline updated**\n"+pipelineMessage,
-							)
+							return
 						}
+
+						pipelineMessage := gitlab.FormatPipelineInfo(pipelineInfo)
+
+						_ = j.SendMessage(
+							context.Background(),
+							j.ToID,
+							"**Pipeline updated**\n"+pipelineMessage,
+						)
 					}
 				}
 			}
@@ -237,14 +240,14 @@ func (job *Job) SendMessage(ctx context.Context, toID int, message string) error
 
 	_, errSendMarkdownMessage := job.Bot.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:    toID,
-		Text:      escapeMarkdown(message),
+		Text:      message,
 		ParseMode: models.ParseModeMarkdown,
 	})
 
 	if errSendMarkdownMessage != nil {
 		_, errSendMessage := job.Bot.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: toID,
-			Text:   message,
+			Text:   escapeMarkdown(message),
 		})
 
 		if errSendMessage != nil {

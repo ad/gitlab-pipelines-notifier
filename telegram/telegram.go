@@ -198,14 +198,14 @@ func SendMessage(ctx context.Context, b *bot.Bot, toID int, message string) erro
 
 	_, errSendMarkdownMessage := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:    toID,
-		Text:      escapeMarkdown(message),
+		Text:      message,
 		ParseMode: models.ParseModeMarkdown,
 	})
 
 	if errSendMarkdownMessage != nil {
 		_, errSendMessage := b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: toID,
-			Text:   message,
+			Text:   escapeMarkdown(message),
 		})
 
 		if errSendMessage != nil {

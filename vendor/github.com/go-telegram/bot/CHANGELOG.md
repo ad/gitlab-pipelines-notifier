@@ -1,5 +1,37 @@
 # Changelog
 
+## v0.5.1 (2023-02-10)
+
+- [BUGFIX] send http.NoBody if all params fields are empty. For example, method `getMyCommands` has not required fields
+
+## v0.5.0 (2023-02-06)
+
+- support bot api 6.5 
+
+## v0.4.3 (2023-02-05)
+
+- [BUGFIX] SendChatAction now calls `sendChatAction` instead `sendDice`
+
+## v0.4.2 (2023-01-30)
+
+- [BUGFIX] change field Thumb to InputFile type
+
+## v0.4.1 (2023-01-19)
+
+- add func `EscapeMarkdownUnescaped` for escape only unescaped symbols
+
+## v0.4.0 (2023-01-13)
+
+- [BREAKING] change some types from `int` to `int64` #11
+
+## v0.3.4 (2023-01-10)
+
+- support bot api 6.4
+
+## v0.3.3 (2022-12-28)
+
+- add `RegisterHandlerMatchFunc` 
+
 ## v0.3.2 (2022-11-28)
 
 - fix field type SendDocumentParams.Document from string to InputFile, add example

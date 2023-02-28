@@ -19,7 +19,7 @@ func TestTrack_StartTrack(t *testing.T) {
 		Cron         *cron.Cron
 	}
 	type args struct {
-		toID           int
+		toID           int64
 		pipelineNumber int
 		key            string
 		project        string

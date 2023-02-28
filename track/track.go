@@ -29,7 +29,7 @@ func (tr *Track) SetCron(cron *cron.Cron) {
 
 }
 
-func (tr *Track) StartTrack(toID, pipelineNumber int, key, project, status string) {
+func (tr *Track) StartTrack(toID int64, pipelineNumber int, key, project, status string) {
 	if tr.Cron == nil {
 		return
 	}

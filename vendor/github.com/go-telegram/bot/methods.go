@@ -177,7 +177,7 @@ func (b *Bot) SendDice(ctx context.Context, params *SendDiceParams) (*models.Mes
 // SendChatAction https://core.telegram.org/bots/api#sendchataction
 func (b *Bot) SendChatAction(ctx context.Context, params *SendChatActionParams) (bool, error) {
 	var result bool
-	err := b.rawRequest(ctx, "sendDice", params, &result)
+	err := b.rawRequest(ctx, "sendChatAction", params, &result)
 	return result, err
 }
 
@@ -423,6 +423,41 @@ func (b *Bot) ReopenForumTopic(ctx context.Context, params *ReopenForumTopicPara
 func (b *Bot) UnpinAllForumTopicMessages(ctx context.Context, params *UnpinAllForumTopicMessagesParams) (bool, error) {
 	var result bool
 	err := b.rawRequest(ctx, "unpinAllForumTopicMessages", params, &result)
+	return result, err
+}
+
+// EditGeneralForumTopic https://core.telegram.org/bots/api#editgeneralforumtopic
+func (b *Bot) EditGeneralForumTopic(ctx context.Context, params *EditGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// CloseGeneralForumTopic https://core.telegram.org/bots/api#closegeneralforumtopic
+func (b *Bot) CloseGeneralForumTopic(ctx context.Context, params *CloseGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "closeGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// ReopenGeneralForumTopic https://core.telegram.org/bots/api#reopengeneralforumtopic
+func (b *Bot) ReopenGeneralForumTopic(ctx context.Context, params *ReopenGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "reopenGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// HideGeneralForumTopic https://core.telegram.org/bots/api#hidegeneralforumtopic
+func (b *Bot) HideGeneralForumTopic(ctx context.Context, params *HideGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "hideGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// UnhideGeneralForumTopic https://core.telegram.org/bots/api#unhidegeneralforumtopic
+func (b *Bot) UnhideGeneralForumTopic(ctx context.Context, params *UnhideGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "unhideGeneralForumTopic", params, &result)
 	return result, err
 }
 

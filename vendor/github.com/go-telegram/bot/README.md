@@ -1,8 +1,12 @@
 # Golang Telegram Bot
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/go-telegram/bot)](https://goreportcard.com/report/github.com/go-telegram/bot) [![codecov](https://codecov.io/gh/go-telegram/bot/branch/main/graph/badge.svg?token=57B1OR6PCK)](https://codecov.io/gh/go-telegram/bot)
+
+✅ Present in the list of libraries https://core.telegram.org/bots/samples#go
+
 > [Telegram Group](https://t.me/gotelegrambotui)
 
-> Supports Bot API version: [6.3](https://core.telegram.org/bots/api#november-5-2022) from November 5, 2022
+> Supports Bot API version: [6.5](https://core.telegram.org/bots/api#february-3-2023) from February 3, 2023
 
 It's a Go zero-dependencies telegram bot framework
 
@@ -188,12 +192,23 @@ Match Types:
 - `MatchTypePrefix` 
 - `MatchTypeContains`
 
-Also, you can use `RegisterHandlerRegexp` to match by regular expression.
+You can use `RegisterHandlerRegexp` to match by regular expression.
 
 ```go
 re := regexp.MustCompile(`^/start`)
 
 b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, re, myStartHandler)
+```
+
+If you want to use custom handler, use `RegisterHandlerMatchFunc`
+
+```go
+matchFunc := func(update *models.Update) bool {
+	// your checks
+	return true
+}
+
+b.RegisterHandlerMatchFunc(bot.HandlerTypeMessageText, matchFunc, myHandler)
 ```
 
 ## InputFile
@@ -268,6 +283,20 @@ bot.SendMediaGroup(ctx, params)
 ```
 
 [Demo in examples](examples/send_media_group/main.go)
+
+## Helpers
+
+### `EscapeMarkdown(s string) string`
+
+Escape special symbols for Telegram MarkdownV2 syntax 
+
+### `EscapeMarkdownUnescaped(s string) string`
+
+Escape only unescaped special symbols for Telegram MarkdownV2 syntax 
+
+### `RandomString(n int) string`
+
+Returns fast random a-zA-Z string with n length
 
 ## UI Components
 

@@ -44,7 +44,7 @@ type Job struct {
 	Bot         *bot.Bot
 	Gitlab      *gl.Client
 	Key         string
-	ToID        int
+	ToID        int64
 	Status      string
 	Project     string
 	Count       int
@@ -225,7 +225,7 @@ func RemoveJob(job *Job) {
 	job.Cron.JobsContainer.mu.Unlock()
 }
 
-func (job *Job) SendMessage(ctx context.Context, toID int, message string) error {
+func (job *Job) SendMessage(ctx context.Context, toID int64, message string) error {
 	if job.Bot == nil {
 		return fmt.Errorf("%s", "bot not set")
 	}
@@ -259,7 +259,7 @@ func (job *Job) SendMessage(ctx context.Context, toID int, message string) error
 }
 
 func (c *Cron) TrackPipelines(gitlabClient *gl.Client) {
-	toID, errToID := strconv.Atoi(c.Conf.NotifyTelegramID)
+	toID, errToID := strconv.ParseInt(c.Conf.NotifyTelegramID, 10, 64)
 	if errToID != nil {
 		return
 	}

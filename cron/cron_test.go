@@ -68,7 +68,7 @@ func TestJob_Run(t *testing.T) {
 		Bot        *bot.Bot
 		Gitlab     *gl.Client
 		Key        string
-		ToID       int
+		ToID       int64
 		Status     string
 		Project    string
 		Count      int
@@ -156,7 +156,7 @@ func TestJob_SendMessage(t *testing.T) {
 		Bot        *bot.Bot
 		Gitlab     *gl.Client
 		Key        string
-		ToID       int
+		ToID       int64
 		Status     string
 		Project    string
 		Count      int
@@ -164,7 +164,7 @@ func TestJob_SendMessage(t *testing.T) {
 	}
 	type args struct {
 		ctx     context.Context
-		toID    int
+		toID    int64
 		message string
 	}
 	tests := []struct {
@@ -289,7 +289,7 @@ func TestJob_Exec(t *testing.T) {
 		Bot        *bot.Bot
 		Gitlab     *gl.Client
 		Key        string
-		ToID       int
+		ToID       int64
 		Status     string
 		Project    string
 		Count      int

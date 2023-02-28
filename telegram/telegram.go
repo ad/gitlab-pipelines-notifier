@@ -52,7 +52,7 @@ func (th *TelegramHandler) Handler(ctx context.Context, b *bot.Bot, update *mode
 	defer recovery.Recovery()
 
 	incomingMessage := ""
-	toID := 0
+	var toID int64 = 0
 
 	if update.EditedMessage != nil && update.EditedMessage.Text != "" {
 		log.Printf("update %#v\n", update.EditedMessage.Text)
@@ -70,7 +70,7 @@ func (th *TelegramHandler) Handler(ctx context.Context, b *bot.Bot, update *mode
 		if !isAllowedID(th.Conf, toID) {
 			log.Printf("you are not allowed to use this bot, your id: %d", toID)
 
-			_ = SendMessage(ctx, b, toID, "you are not allowed to use this bot, your id: "+strconv.Itoa(toID))
+			_ = SendMessage(ctx, b, toID, fmt.Sprintf("you are not allowed to use this bot, your id: %d", toID))
 
 			return
 		}
@@ -171,8 +171,8 @@ func (th *TelegramHandler) Handler(ctx context.Context, b *bot.Bot, update *mode
 	}
 }
 
-func isAllowedID(conf *config.Config, id int) bool {
-	checkID := strconv.Itoa(id)
+func isAllowedID(conf *config.Config, id int64) bool {
+	checkID := strconv.FormatInt(id, 10)
 
 	for _, allowedID := range conf.AllowedIDsList {
 		if allowedID == checkID {
@@ -183,7 +183,7 @@ func isAllowedID(conf *config.Config, id int) bool {
 	return false
 }
 
-func SendMessage(ctx context.Context, b *bot.Bot, toID int, message string) error {
+func SendMessage(ctx context.Context, b *bot.Bot, toID int64, message string) error {
 	if b == nil {
 		return fmt.Errorf("%s", "bot not set")
 	}

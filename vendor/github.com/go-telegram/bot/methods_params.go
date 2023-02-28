@@ -63,6 +63,7 @@ type SendPhotoParams struct {
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
+	HasSpoiler               bool                   `json:"has_spoiler,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                    `json:"reply_to_message_id,omitempty"`
@@ -80,7 +81,7 @@ type SendAudioParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Performer                string                 `json:"performer,omitempty"`
 	Title                    string                 `json:"title,omitempty"`
-	Thumb                    string                 `json:"thumb,omitempty"`
+	Thumb                    models.InputFile       `json:"thumb,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                    `json:"reply_to_message_id,omitempty"`
@@ -92,7 +93,7 @@ type SendDocumentParams struct {
 	ChatID                      any                    `json:"chat_id"`
 	MessageThreadID             int                    `json:"message_thread_id,omitempty"`
 	Document                    models.InputFile       `json:"document"`
-	Thumb                       string                 `json:"thumb,omitempty"`
+	Thumb                       models.InputFile       `json:"thumb,omitempty"`
 	Caption                     string                 `json:"caption,omitempty"`
 	ParseMode                   models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities             []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -111,10 +112,11 @@ type SendVideoParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
-	Thumb                    string                 `json:"thumb,omitempty"`
+	Thumb                    models.InputFile       `json:"thumb,omitempty"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
+	HasSpoiler               bool                   `json:"has_spoiler,omitempty"`
 	SupportsStreaming        bool                   `json:"supports_streaming,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
@@ -130,10 +132,11 @@ type SendAnimationParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
-	Thumb                    string                 `json:"thumb,omitempty"`
+	Thumb                    models.InputFile       `json:"thumb,omitempty"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
+	HasSpoiler               bool                   `json:"has_spoiler,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                    `json:"reply_to_message_id,omitempty"`
@@ -162,7 +165,7 @@ type SendVideoNoteParams struct {
 	VideoNote                models.InputFile   `json:"video_note"`
 	Duration                 int                `json:"duration,omitempty"`
 	Length                   int                `json:"length,omitempty"`
-	Thumb                    string             `json:"thumb,omitempty"`
+	Thumb                    models.InputFile   `json:"thumb,omitempty"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                `json:"reply_to_message_id,omitempty"`
@@ -209,7 +212,7 @@ type EditMessageLiveLocationParams struct {
 }
 
 type StopMessageLiveLocationParams struct {
-	ChatID          string             `json:"chat_id,omitempty"`
+	ChatID          any                `json:"chat_id,omitempty"`
 	MessageID       int                `json:"message_id,omitempty"`
 	InlineMessageID string             `json:"inline_message_id,omitempty"`
 	ReplyMarkup     models.ReplyMarkup `json:"reply_markup,omitempty"`
@@ -281,8 +284,9 @@ type SendDiceParams struct {
 }
 
 type SendChatActionParams struct {
-	ChatID any    `json:"chat_id"`
-	Action string `json:"action"`
+	ChatID          any    `json:"chat_id"`
+	MessageThreadID int    `json:"message_thread_id,omitempty"`
+	Action          string `json:"action"`
 }
 
 type GetUserProfilePhotosParams struct {
@@ -309,10 +313,11 @@ type UnbanChatMemberParams struct {
 }
 
 type RestrictChatMemberParams struct {
-	ChatID      any                     `json:"chat_id"`
-	UserID      int                     `json:"user_id"`
-	Permissions *models.ChatPermissions `json:"permissions,omitempty"`
-	UntilDate   int                     `json:"until_date,omitempty"`
+	ChatID                        any                     `json:"chat_id"`
+	UserID                        int                     `json:"user_id"`
+	Permissions                   *models.ChatPermissions `json:"permissions,omitempty"`
+	UseIndependentChatPermissions bool                    `json:"use_independent_chat_permissions,omitempty"`
+	UntilDate                     int                     `json:"until_date,omitempty"`
 }
 
 type PromoteChatMemberParams struct {
@@ -348,8 +353,9 @@ type UnbanChatSenderChatParams struct {
 }
 
 type SetChatPermissionsParams struct {
-	ChatID      any                    `json:"chat_id"`
-	Permissions models.ChatPermissions `json:"permissions"`
+	ChatID                        any                    `json:"chat_id"`
+	Permissions                   models.ChatPermissions `json:"permissions"`
+	UseIndependentChatPermissions bool                   `json:"use_independent_chat_permissions,omitempty"`
 }
 
 type ExportChatInviteLinkParams struct {
@@ -458,8 +464,8 @@ type CreateForumTopicParams struct {
 type EditForumTopicParams struct {
 	ChatID            any    `json:"chat_id"`
 	MessageThreadID   int    `json:"message_thread_id"`
-	Name              string `json:"name"`
-	IconCustomEmojiID string `json:"icon_custom_emoji_id"`
+	Name              string `json:"name,omitempty"`
+	IconCustomEmojiID string `json:"icon_custom_emoji_id,omitempty"`
 }
 
 type CloseForumTopicParams struct {
@@ -480,6 +486,27 @@ type DeleteForumTopicParams struct {
 type UnpinAllForumTopicMessagesParams struct {
 	ChatID          any `json:"chat_id"`
 	MessageThreadID int `json:"message_thread_id"`
+}
+
+type EditGeneralForumTopicParams struct {
+	ChatID any    `json:"chat_id"`
+	Name   string `json:"name"`
+}
+
+type CloseGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
+}
+
+type ReopenGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
+}
+
+type HideGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
+}
+
+type UnhideGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
 }
 
 type DeleteChatStickerSetParams struct {

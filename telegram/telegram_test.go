@@ -46,7 +46,7 @@ func Test_escapeMarkdown(t *testing.T) {
 func Test_isAllowedID(t *testing.T) {
 	type args struct {
 		conf *config.Config
-		id   int
+		id   int64
 	}
 	tests := []struct {
 		name string
@@ -115,7 +115,7 @@ func TestSendMessage(t *testing.T) {
 	type args struct {
 		ctx     context.Context
 		b       *bot.Bot
-		toID    int
+		toID    int64
 		message string
 	}
 	tests := []struct {

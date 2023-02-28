@@ -53,9 +53,9 @@ func InitConfig(args []string, fileSystem fs.FS, filename string) (*Config, erro
 			} else {
 				initFromFile = true
 			}
-		} /* else {
+		} else {
 			return nil, fmt.Errorf("can't read file, %s", err.Error())
-		}*/
+		}
 	}
 
 	if !initFromFile {

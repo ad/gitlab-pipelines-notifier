@@ -24,6 +24,7 @@ func TestFormatPipelineInfo(t *testing.T) {
 		{
 			name: "success",
 			want: `✅ test
+ref: test
 started: not started
 finished: not finished
 duration: 0s`,
@@ -38,6 +39,7 @@ duration: 0s`,
 		{
 			name: "running",
 			want: `🏃 test
+ref: test
 started: not started
 finished: not finished
 duration: 0s`,
@@ -52,6 +54,7 @@ duration: 0s`,
 		{
 			name: "failed",
 			want: `❌ test
+ref: test
 started: not started
 finished: not finished
 duration: 0s`,
@@ -66,6 +69,7 @@ duration: 0s`,
 		{
 			name: "canceled",
 			want: `🚫 test
+ref: test
 started: not started
 finished: not finished
 duration: 0s`,
@@ -80,6 +84,7 @@ duration: 0s`,
 		{
 			name: "canceled, finished",
 			want: `🚫 test
+ref: test
 started: not started
 finished: ` + finishedAt.String() + `
 duration: 0s`,
@@ -95,6 +100,7 @@ duration: 0s`,
 		{
 			name: "canceled, started, finished",
 			want: `🚫 test
+ref: test
 started: ` + startedAt.String() + `
 finished: ` + finishedAt.String() + `
 duration: 0s`,

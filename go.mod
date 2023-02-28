@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/go-telegram/bot v0.5.1
-	github.com/google/go-cmp v0.5.8
+	github.com/google/go-cmp v0.5.9
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/xanzy/go-gitlab v0.80.2
 )

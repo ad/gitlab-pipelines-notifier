@@ -3,6 +3,7 @@ module github.com/ad/gitlab-pipelines-notifier
 go 1.20
 
 require (
+	github.com/go-telegram/bot v0.7.4
 	github.com/go-telegram/bot v0.7.3
 	github.com/google/go-cmp v0.5.9
 	github.com/robfig/cron/v3 v3.0.1

@@ -6,7 +6,7 @@
 
 > [Telegram Group](https://t.me/gotelegrambotui)
 
-> Supports Bot API version: [6.6](https://core.telegram.org/bots/api#march-9-2023) from March 9, 2023
+> Supports Bot API version: [6.7](https://core.telegram.org/bots/api#april-21-2023) from April 21, 2023
 
 It's a Go zero-dependencies telegram bot framework
 
@@ -178,6 +178,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithDebugHandler(handler DebugHandler)` - add debug handler
 - `WithHTTPClient(pollTimeout time.Duration, client HttpClient)` - set custom http client
 - `WithServerURL(serverURL string)` - set server url
+- `WithSkipGetMe()` - skip call GetMe on bot init
 
 ## Message.Text and CallbackQuery.Data handlers
 

@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.7.11 (2023-05-26)
+
+- add missed ChatID to BotCommandScopeChat
+- add missed BotCommandScopeChatAdministrators.MarshalCustom
+
+## v0.7.10 (2023-05-22)
+
+- add ChatAction type with consts for `sendChatAction` method
+
+## v0.7.9 (2023-05-16)
+
+- add option `WithSkipGetMe()`
+
+## v0.7.8 (2023-04-26)
+
+- [BUGFIX] fix type of field `Message.ReplyMarkup` (#30)
+- improve examples (#31)
+
+## v0.7.7 (2023-04-24)
+
+- change `models.ReplyMarkup` from `any` to interface
+
+## v0.7.6 (2023-04-24)
+
+- support bot api 6.7
+
 ## v0.7.5 (2023-04-13)
 
 - add option `WithDebugHandler`

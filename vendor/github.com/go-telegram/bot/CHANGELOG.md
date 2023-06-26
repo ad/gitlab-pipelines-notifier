@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.7.13 (2023-06-14)
+
+- revert `v0.7.7` changes
+
+## v0.7.12 (2023-06-13)
+
+- check for empty token on bot init
+
 ## v0.7.11 (2023-05-26)
 
 - add missed ChatID to BotCommandScopeChat

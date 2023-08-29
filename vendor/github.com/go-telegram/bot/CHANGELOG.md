@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.7.15 (2023-08-24)
+
+- support bot api 6.8 
+
+## v0.7.14 (2023-08-14)
+
+- update `defaultUpdatesChanCap` from 64 to 1024
+
 ## v0.7.13 (2023-06-14)
 
 - revert `v0.7.7` changes

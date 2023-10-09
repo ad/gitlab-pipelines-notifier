@@ -24,7 +24,7 @@ github.com/hashicorp/go-retryablehttp
 # github.com/robfig/cron/v3 v3.0.1
 ## explicit; go 1.12
 github.com/robfig/cron/v3
-# github.com/xanzy/go-gitlab v0.92.3
+# github.com/xanzy/go-gitlab v0.93.0
 ## explicit; go 1.18
 github.com/xanzy/go-gitlab
 # golang.org/x/net v0.8.0

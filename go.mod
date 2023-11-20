@@ -6,7 +6,7 @@ require (
 	github.com/go-telegram/bot v0.8.2
 	github.com/google/go-cmp v0.6.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/xanzy/go-gitlab v0.93.2
+	github.com/xanzy/go-gitlab v0.94.0
 )
 
 require (

@@ -47,6 +47,7 @@ type ForwardMessageParams struct {
 	DisableNotification     bool                            `json:"disable_notification,omitempty"`
 	ProtectContent          bool                            `json:"protect_content,omitempty"`
 	SuggestedPostParameters *models.SuggestedPostParameters `json:"suggested_post_parameters,omitempty"`
+	MessageEffectID         string                          `json:"message_effect_id,omitempty"`
 	MessageID               int                             `json:"message_id"`
 }
 
@@ -77,6 +78,7 @@ type CopyMessageParams struct {
 	ProtectContent          bool                            `json:"protect_content,omitempty"`
 	AllowPaidBroadcast      bool                            `json:"allow_paid_broadcast,omitempty"`
 	SuggestedPostParameters *models.SuggestedPostParameters `json:"suggested_post_parameters,omitempty"`
+	MessageEffectID         string                          `json:"message_effect_id,omitempty"`
 	ReplyParameters         *models.ReplyParameters         `json:"reply_parameters,omitempty"`
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
@@ -497,6 +499,7 @@ type PromoteChatMemberParams struct {
 	CanDeleteStories        bool  `json:"can_delete_stories,omitempty"`
 	CanManageTopics         bool  `json:"can_manage_topics,omitempty"`
 	CanManageDirectMessages bool  `json:"can_manage_direct_messages,omitempty"`
+	CanManageTags           bool  `json:"can_manage_tags,omitempty"`
 }
 
 type SetChatAdministratorCustomTitleParams struct {
@@ -1303,4 +1306,33 @@ type SendMessageDraftParams struct {
 	Text                 string                 `json:"text"`
 	ParseMode            models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities             []models.MessageEntity `json:"entities,omitempty"`
+}
+
+// RepostStoryParams https://core.telegram.org/bots/api#repoststory
+type RepostStoryParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	FromChatID           int64  `json:"from_chat_id"`
+	FromStoryID          int    `json:"from_story_id"`
+	ActivePeriod         int    `json:"active_period"`
+	PostToChatPage       bool   `json:"post_to_chat_page,omitempty"`
+	ProtectContent       bool   `json:"protect_content,omitempty"`
+}
+
+// SetMyProfilePhotoParams https://core.telegram.org/bots/api#setmyprofilephoto
+type SetMyProfilePhotoParams struct {
+	Photo models.InputProfilePhoto `json:"photo"`
+}
+
+// GetUserProfileAudiosParams https://core.telegram.org/bots/api#getuserprofileaudios
+type GetUserProfileAudiosParams struct {
+	UserID int64 `json:"user_id"`
+	Offset int   `json:"offset,omitempty"`
+	Limit  int   `json:"limit,omitempty"`
+}
+
+// SetChatMemberTagParams https://core.telegram.org/bots/api#setchatmembertag
+type SetChatMemberTagParams struct {
+	ChatID any    `json:"chat_id" rules:"required,chat_id"`
+	UserID int64  `json:"user_id" rules:"required"`
+	Tag    string `json:"tag,omitempty"`
 }

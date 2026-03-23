@@ -32,14 +32,16 @@ type CopyTextButton struct {
 // InlineKeyboardButton https://core.telegram.org/bots/api#inlinekeyboardbutton
 type InlineKeyboardButton struct {
 	Text                         string                       `json:"text"`
+	IconCustomEmojiID            string                       `json:"icon_custom_emoji_id,omitempty"`
+	Style                        string                       `json:"style,omitempty"`
 	URL                          string                       `json:"url,omitempty"`
 	CallbackData                 string                       `json:"callback_data,omitempty"`
 	WebApp                       *WebAppInfo                  `json:"web_app,omitempty"`
 	LoginURL                     *LoginURL                    `json:"login_url,omitempty"`
-	SwitchInlineQuery            string                       `json:"switch_inline_query,omitempty"`
-	SwitchInlineQueryCurrentChat string                       `json:"switch_inline_query_current_chat,omitempty"`
+	SwitchInlineQuery            *string                      `json:"switch_inline_query,omitempty"`
+	SwitchInlineQueryCurrentChat *string                      `json:"switch_inline_query_current_chat,omitempty"`
 	SwitchInlineQueryChosenChat  *SwitchInlineQueryChosenChat `json:"switch_inline_query_chosen_chat,omitempty"`
-	CopyText                     CopyTextButton               `json:"copy_text,omitempty"`
+	CopyText                     *CopyTextButton              `json:"copy_text,omitempty"`
 	CallbackGame                 *CallbackGame                `json:"callback_game,omitempty"`
 	Pay                          bool                         `json:"pay,omitempty"`
 }
@@ -56,8 +58,10 @@ type ReplyKeyboardMarkup struct {
 
 // KeyboardButton https://core.telegram.org/bots/api#keyboardbutton
 type KeyboardButton struct {
-	Text            string                      `json:"text"`
-	RequestUser     *KeyboardButtonRequestUsers `json:"request_user,omitempty"`
+	Text              string                      `json:"text"`
+	IconCustomEmojiID string                      `json:"icon_custom_emoji_id,omitempty"`
+	Style             string                      `json:"style,omitempty"`
+	RequestUser     *KeyboardButtonRequestUser  `json:"request_user,omitempty"`
 	RequestUsers    *KeyboardButtonRequestUsers `json:"request_users,omitempty"`
 	RequestChat     *KeyboardButtonRequestChat  `json:"request_chat,omitempty"`
 	RequestContact  bool                        `json:"request_contact,omitempty"`
@@ -69,8 +73,8 @@ type KeyboardButton struct {
 // KeyboardButtonRequestUser https://core.telegram.org/bots/api#keyboardbuttonrequestuser
 type KeyboardButtonRequestUser struct {
 	RequestID     int32 `json:"request_id"`
-	UserIsBot     bool  `json:"user_is_bot,omitempty"`
-	UserIsPremium bool  `json:"user_is_premium,omitempty"`
+	UserIsBot     *bool `json:"user_is_bot,omitempty"`
+	UserIsPremium *bool `json:"user_is_premium,omitempty"`
 }
 
 // KeyboardButtonRequestUsers https://core.telegram.org/bots/api#keyboardbuttonrequestusers

@@ -1,5 +1,55 @@
 # Changelog
 
+## v1.30.0 (2026-11-19)
+
+- Preserve update delivery during shutdown (#317). Polling resumes at the first
+  undispatched update; later updates may be delivered again. `WebhookHandler`
+  returns HTTP 200 once a worker takes the update, or 503 if no worker takes it
+  before shutdown, so Telegram can retry.
+- `Start` and `StartWebhook` now wait for running handlers to return. Handlers
+  should respect context cancellation; a handler that never returns will block
+  shutdown. With `WithNotAsyncHandlers`, webhook requests wait for a free worker (#317).
+- Set `AnswerInlineQueryParams.DisableCache` to send an explicit `cache_time: 0`.
+  It overrides `CacheTime`; without the flag, a zero `CacheTime` is still omitted (#318).
+- Fix: `EscapeMarkdown` escapes literal backslashes in plain text for MarkdownV2 (#319).
+
+## v1.29.0 (2026-11-17)
+
+- Add support for replying to updates directly in webhook responses (#305).
+- Fix: `GetMyDefaultAdministratorRights` calls the getter endpoint instead of changing the default administrator rights (#316).
+- Fix: `MessageGenerationStopped.DraftID` accepts a quoted integer (#313).
+- Fix: `ValidateWebappRequest` no longer decodes values a second time, so `+` and `%` in Mini App init data do not break the signature. The passed `url.Values` are left unchanged (#311).
+- Add an example for sending videos (#238).
+
+## v1.28.0 (2026-11-09)
+
+- Add `Update.EffectiveUser()` and `Update.EffectiveChat()` helpers for resolving
+  the user and chat associated with an update. They return pointers into the
+  original update, or nil when unavailable, and support widget queries (#307, #310).
+- Add `HandlerTypeInlineQuery` for matching inline query text and
+  `RegisterHandlerInlineQuery` for handling all inline queries, including empty
+  queries (#294).
+- Fix: command matching skips invalid entity offsets and lengths instead of
+  panicking on out-of-bounds string slices (#304).
+- Fix: `Bot.ID()` returns zero when the numeric token prefix overflows `int64`
+  (#303).
+- Support Bot API 10.4 (November 9, 2026 update):
+  - Widgets: new `Widget` (on `Message` and `ExternalReplyInfo`); `WidgetQuery` and `SharedWidgetQuery` on `Update` (and the matching allowed-update constants); the `WidgetQueryType` union (`data`, `sign_data`, `sent_transaction`) with `WidgetQueryWallet`; methods `sendWidget`, `sendSharedWidget`, `answerWidgetQuery`, `editMessageWidgetData` and `editSharedWidgetData`; `InputWidgetMessageContent` and `InputSharedWidgetMessageContent` for inline results.
+  - `editMessageWidgetData` takes `public_data` and `chat_data` as `*string`: a nil pointer leaves the value unchanged and a pointer to `""` clears it. `editSharedWidgetData` always sends `public_data`, including an empty string, which clears the shared value.
+  - Ephemeral callback replies: `EphemeralMessageParameters.receiver_user_id` is omitted when zero, and `chat_id` is omitted when nil on the 14 send methods that accept `ephemeral_message_parameters` (`sendMessage`, `sendPhoto`, `sendLivePhoto`, `sendAudio`, `sendDocument`, `sendVideo`, `sendAnimation`, `sendVoice`, `sendVideoNote`, `sendLocation`, `sendVenue`, `sendContact`, `sendSticker`, `sendRichMessage`). Callers that set those fields are unchanged.
+  - Quotes: `rich_texts` on `TextQuote` and `quote_rich_texts` on `ReplyParameters`. `MessageEntity` types `bank_card_number` and `ton_address`. `RichTextTonAddress` on the `RichText` union.
+  - TON wallet: `TonWalletCard` (on `ChatFullInfo` and inside a data widget query), `TonWalletCardSticker`, `TonNft`, `TonNftAttribute`, and `TonWalletTransfer` on `Message`. Amounts and NFT indexes are strings. `StoryAreaPosition` is now `AreaPosition`; the old name remains an alias.
+  - Chat share themes: `ChatShareTheme` and `EmojiType` unions, `ChatShareThemeBackdrop`, `ChatShareThemeBackdrops`, and `getChatShareThemeBackdrops`.
+  - Gifts and verification: `getUniqueGift`, `deleteBusinessAccountGift`, and `custom_description_parse_mode` / `custom_description_entities` on `verifyUser` and `verifyChat`. `PaidMessagesWaived` on `Message`.
+- Add `HandlerTypeWidgetQueryData` and `HandlerTypeSharedWidgetQueryData` for
+  matching widget query data. `WidgetQuery.ChatType` uses the string-based
+  `WidgetQueryChatType` type with constants for the supported chat types (#310).
+- Write `*string` multipart fields verbatim, preserving quotes, backslashes,
+  newlines and HTML-sensitive characters. Optional nil pointers are omitted;
+  pointers to empty strings produce an explicit empty field (#310).
+- Split CI into separate lint, test and coverage-publishing jobs (#226).
+- No client change for the rest of the release: widget messages still cannot be copied, `can_send_other_messages` now also covers widgets, Premium secondary usernames are suggested through the existing `suggested_username` field, and private-chat topic links are ordinary URLs.
+
 ## v1.27.0 (2026-09-11)
 
 - Fix: a request can be retried by HTTP/2 after the server sends GOAWAY. `rawRequest`
